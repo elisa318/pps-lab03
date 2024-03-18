@@ -15,22 +15,41 @@ object Sequences: // Essentially, generic linkedlists
       case Cons(h, t) => h + sum(t)
       case _          => 0
 
-    def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
+    /*def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
       case Cons(h, t) => Cons(mapper(h), map(t)(mapper))
-      case Nil()      => Nil()
+      case Nil()      => Nil()*/
 
-    def filter[A](l1: Sequence[A])(pred: A => Boolean): Sequence[A] = l1 match
+    /*def filter[A](l1: Sequence[A])(pred: A => Boolean): Sequence[A] = l1 match
       case Cons(h, t) if pred(h) => Cons(h, filter(t)(pred))
       case Cons(_, t)            => filter(t)(pred)
-      case Nil()                 => Nil()
+      case Nil()                 => Nil()*/
 
     // Lab 03
-    def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = ???
+    def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = (first, second) match
+      case (Cons(h1, t1), Cons(h2, t2))  => Cons((h1, h2), zip(t1, t2))
+      case _ => Nil()
 
-    def take[A](l: Sequence[A])(n: Int): Sequence[A] = ???
+    def take[A](l: Sequence[A])(n: Int): Sequence[A] = l match
+      case Cons(h, t) if n > 0 => Cons(h, take(t)(n - 1))
+      case _ => Nil()
     
-    def concat[A](l1: Sequence[A], l2: Sequence[A]): Sequence[A] = ???
-    def flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = ???
+    def concat[A](l1: Sequence[A], l2: Sequence[A]): Sequence[A] = (l1, l2) match
+      case (Nil(), _) => l2
+      case (_, Nil()) => l1
+      case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1, concat(t1, l2))
+      case _ => Nil()
+
+    
+    def flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = l match
+      case Cons(h, t) => concat(mapper(h), flatMap(t)(mapper))
+      case _ => Nil()
+    
+    def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
+      case _ => flatMap(l)(h => Cons(mapper(h), Nil()))
+
+    def filter[A](l1: Sequence[A])(pred: A => Boolean): Sequence[A] = l1 match
+      case Cons(h, t) if(pred(h)) => flatMap(l1)(h => Cons(h, Nil()))
+      case _ => Nil()
 
     def min(l: Sequence[Int]): Optional[Int] = ???
     
